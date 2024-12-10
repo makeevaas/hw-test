@@ -1,4 +1,4 @@
-module github.com/makeevaas/hw01_hello_otus
+module github.com/makeevaas/hw-test/hw01_hello_otus
 
 go 1.22
 
