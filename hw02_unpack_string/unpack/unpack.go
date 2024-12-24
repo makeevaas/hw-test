@@ -14,6 +14,9 @@ func Unpack(s string) (string, error) {
 	var newStr string
 	var elCurrent, elNext int
 	for i, r := range s {
+		if r >= 128 {
+			continue
+		}
 		//текущий элемент
 		elCurrent = i
 		//следующий
@@ -43,6 +46,7 @@ func Unpack(s string) (string, error) {
 		in, err := strconv.Atoi(string(s[elNext]))
 		if err == nil {
 			if elCurrent != elNext {
+				fmt.Println(in)
 				newStr = newStr + strings.Repeat(string(s[elCurrent]), in)
 			}
 		} else {
@@ -52,10 +56,10 @@ func Unpack(s string) (string, error) {
 			}
 		}
 
-		//fmt.Println("cur - ", elCurrent)
-		//fmt.Println("next -", elNext)
-		//fmt.Println("===============")
+		fmt.Println("cur - ", elCurrent)
+		fmt.Println("next -", elNext)
+		fmt.Println("===============")
 	}
-	fmt.Println("Новая строка:", newStr)
+	fmt.Printf("Новая строка:%s %T\n", newStr, newStr)
 	return newStr, nil
 }
