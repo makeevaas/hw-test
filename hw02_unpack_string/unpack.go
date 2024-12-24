@@ -17,12 +17,12 @@ func Unpack(s string) (string, error) {
 		if r >= 128 {
 			continue
 		}
-		//текущий элемент
+		// текущий элемент
 		elCurrent = i
-		//следующий
+		// следующий
 		if i+1 < len(s) {
 			elNext = i + 1
-			//если число составное = ошибка
+			// если число составное = ошибка
 			checkSteamNum := string(r) + string(s[elNext])
 			fmt.Println("составное число: ", checkSteamNum)
 			_, err := strconv.Atoi(checkSteamNum)
@@ -32,9 +32,9 @@ func Unpack(s string) (string, error) {
 		} else if i+1 > len(s) {
 			elNext = i
 		}
-		//предыдущий
+		// предыдущий
 		if i == 0 {
-			//если первый лемент числовой = ошибка
+			// если первый лемент числовой = ошибка
 			fmt.Println("первый элемент строки: ", string(r))
 			_, err := strconv.Atoi(string(r))
 			if err == nil {
@@ -42,7 +42,7 @@ func Unpack(s string) (string, error) {
 			}
 		}
 
-		//если ошибок не произошло - делаем строку новую
+		// если ошибок не произошло - делаем строку новую
 		in, err := strconv.Atoi(string(s[elNext]))
 		if err == nil {
 			if elCurrent != elNext {
