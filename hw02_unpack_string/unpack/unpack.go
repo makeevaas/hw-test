@@ -47,12 +47,12 @@ func Unpack(s string) (string, error) {
 		if err == nil {
 			if elCurrent != elNext {
 				fmt.Println(in)
-				newStr = newStr + strings.Repeat(string(s[elCurrent]), in)
+				newStr += strings.Repeat(string(s[elCurrent]), in)
 			}
 		} else {
 			_, err := strconv.Atoi(string(r))
 			if err != nil {
-				newStr = newStr + string(r)
+				newStr += string(r)
 			}
 		}
 
