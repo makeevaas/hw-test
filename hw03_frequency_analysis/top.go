@@ -1,6 +1,15 @@
-package hw03frequencyanalysis
+// package hw03frequencyanalysis
+package main
 
-func Top10(_ string) []string {
+import "fmt"
+
+func Top10(s string) []string {
 	// Place your code here.
-	return nil
+	var sLst []string
+	sLst = append(sLst, s)
+	return sLst
+}
+func main() {
+	res := Top10("привет")
+	fmt.Println(res)
 }
