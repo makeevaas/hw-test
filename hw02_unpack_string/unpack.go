@@ -8,47 +8,44 @@ import (
 )
 
 var ErrInvalidString = errors.New("invalid string")
+var Sepatator = `\`
 
 func Unpack(s string) (string, error) {
 	// Place your code here.
 	var newStr string
 	var elCurrent, elNext int
 	var elBack string
-	var separator bool
 	for i, r := range s {
 		// условия пропусков
 		if r >= 128 {
 			continue
 		}
-		if i > 0 && len(s) >= i+2 && string(r) == `\` && string(s[i+1]) == `\` && string(s[i+2]) == `\` {
-			separator = true
-			newStr += string(r)
-		}
-		if string(r) != `\` {
-			separator = false
-		}
-		if i > 0 && elBack != string(s[i-1]) {
-			elBack = ""
-		}
-		if string(r) == `\` && elBack != `\` {
-			elBack = `\`
-			continue
-		}
-		if separator {
+
+		if i > 0 && string(r) == Sepatator && len(s) >= i+1 && string(s[i+1]) == Sepatator {
 			continue
 		}
 
+		if i > 0 && string(r) == Sepatator && len(s) >= i+1 && string(s[i+1]) != Sepatator && string(s[i-1]) != Sepatator {
+			elBack = Sepatator
+			continue
+		}
+
+		if i > 0 && elBack != string(s[i-1]) {
+			elBack = ""
+		}
+
+		fmt.Printf("%s\n", elBack)
 		// текущий элемент
 		elCurrent = i
 		// следующий
 		if i+1 < len(s) {
 			elNext = i + 1
 			// если число составное = ошибка
-			checkSteamNum := string(r) + string(s[elNext])
-			fmt.Println("составное число: ", checkSteamNum)
-			_, err := strconv.Atoi(checkSteamNum)
-			if err == nil {
-				if elBack != `\` {
+			if elBack != Sepatator {
+				checkSteamNum := string(r) + string(s[elNext])
+				fmt.Println("составное число: ", checkSteamNum)
+				_, err := strconv.Atoi(checkSteamNum)
+				if err == nil {
 					return "", ErrInvalidString
 				}
 			}
@@ -66,24 +63,22 @@ func Unpack(s string) (string, error) {
 		}
 
 		// если ошибок не произошло - делаем строку новую
-
-		fmt.Printf("%v\n", separator)
-
 		in, err := strconv.Atoi(string(s[elNext]))
 		if err == nil {
 			if elCurrent != elNext {
 				fmt.Println(in)
 				newStr += strings.Repeat(string(s[elCurrent]), in)
-
 			}
 		} else {
 			_, err := strconv.Atoi(string(r))
 			if err != nil {
 				newStr += string(r)
+			} else {
+				if string(s[elNext]) == `\` {
+					newStr += string(r)
+				}
 			}
-			if elBack == `\` {
-				newStr += string(r)
-			}
+
 		}
 
 		fmt.Println("cur - ", elCurrent)
