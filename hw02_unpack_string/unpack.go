@@ -16,7 +16,7 @@ func Unpack(s string) (string, error) {
 	var elBack string
 	var separator bool
 	for i, r := range s {
-		//условия пропусков
+		// условия пропусков
 		if r >= 128 {
 			continue
 		}
