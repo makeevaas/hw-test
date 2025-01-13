@@ -8,44 +8,42 @@ import (
 )
 
 var ErrInvalidString = errors.New("invalid string")
-var Sepatator = `\`
 
 func Unpack(s string) (string, error) {
 	// Place your code here.
 	var newStr string
 	var elCurrent, elNext int
 	var elBack string
+	var continueIterValue, delimiter bool
+
 	for i, r := range s {
 		// условия пропусков
 		if r >= 128 {
 			continue
 		}
 
-		if i > 0 && string(r) == Sepatator && len(s) >= i+1 && string(s[i+1]) == Sepatator {
+		delimiter = checkDelimiterEl(r, delimiter)
+
+		delimiter, newStr = checkDelimiterSet(i, s, newStr, delimiter, r)
+
+		elBack = resetLastValue(i, s, elBack)
+
+		continueIterValue, elBack = continueIter(elBack, r, delimiter)
+		if continueIterValue {
 			continue
 		}
 
-		if i > 0 && string(r) == Sepatator && len(s) >= i+1 && string(s[i+1]) != Sepatator && string(s[i-1]) != Sepatator {
-			elBack = Sepatator
-			continue
-		}
-
-		if i > 0 && elBack != string(s[i-1]) {
-			elBack = ""
-		}
-
-		fmt.Printf("%s\n", elBack)
 		// текущий элемент
 		elCurrent = i
 		// следующий
 		if i+1 < len(s) {
 			elNext = i + 1
 			// если число составное = ошибка
-			if elBack != Sepatator {
-				checkSteamNum := string(r) + string(s[elNext])
-				fmt.Println("составное число: ", checkSteamNum)
-				_, err := strconv.Atoi(checkSteamNum)
-				if err == nil {
+			checkSteamNum := string(r) + string(s[elNext])
+			fmt.Println("составное число: ", checkSteamNum)
+			_, err := strconv.Atoi(checkSteamNum)
+			if err == nil {
+				if elBack != `\` {
 					return "", ErrInvalidString
 				}
 			}
@@ -73,12 +71,10 @@ func Unpack(s string) (string, error) {
 			_, err := strconv.Atoi(string(r))
 			if err != nil {
 				newStr += string(r)
-			} else {
-				if string(s[elNext]) == `\` {
-					newStr += string(r)
-				}
 			}
-
+			if elBack == `\` {
+				newStr += string(r)
+			}
 		}
 
 		fmt.Println("cur - ", elCurrent)
@@ -87,4 +83,38 @@ func Unpack(s string) (string, error) {
 	}
 	fmt.Printf("Новая строка:%s %T\n", newStr, newStr)
 	return newStr, nil
+}
+
+func checkDelimiterEl(r rune, delimiter bool) bool {
+	if string(r) != `\` {
+		delimiter = false
+	}
+	return delimiter
+}
+
+func checkDelimiterSet(i int, s, newStr string, delimiter bool, r rune) (bool, string) {
+	if i > 0 && len(s) >= i+2 && string(r) == `\` && string(s[i+1]) == `\` && string(s[i+2]) == `\` {
+		delimiter = true
+		newStr += string(r)
+	}
+	return delimiter, newStr
+}
+
+func resetLastValue(i int, s, elBack string) string {
+	if i > 0 && elBack != string(s[i-1]) {
+		elBack = ""
+	}
+	return elBack
+}
+
+func continueIter(elBack string, r rune, delimiter bool) (bool, string) {
+	var res bool
+	if string(r) == `\` && elBack != `\` {
+		elBack = `\`
+		res = true
+	}
+	if delimiter {
+		res = true
+	}
+	return res, elBack
 }
