@@ -1,13 +1,10 @@
-package hw03frequencyanalysis
+package main
 
 import (
-	"testing"
-
-	"github.com/stretchr/testify/require"
+	"fmt"
+	"sort"
+	"strings"
 )
-
-// Change to true if needed.
-var taskWithAsteriskIsCompleted = true
 
 var text = `Как видите, он  спускается  по  лестнице  вслед  за  своим
 	другом   Кристофером   Робином,   головой   вниз,  пересчитывая
@@ -43,40 +40,55 @@ var text = `Как видите, он  спускается  по  лестни�
 	посидеть у огня и послушать какую-нибудь интересную сказку.
 		В этот вечер...`
 
-func TestTop10(t *testing.T) {
-	t.Run("no words in empty string", func(t *testing.T) {
-		require.Len(t, Top10(""), 0)
+func main() {
+
+	var lstWords []string
+	var wordLsts [][]string
+
+	s := text //"Aligator dog cat cat aligator mouth cat dog dog cat dog aligator mouth horse aligator"
+	s = strings.ToLower(s)
+	// top 10
+	newSlice := strings.Fields(s)
+	sort.Sort(sort.StringSlice(newSlice))
+	fmt.Println(newSlice)
+	var word string
+	for _, r := range newSlice {
+		r = strings.Replace(r, ".", "", -1)
+		if r == "-" {
+			continue
+		}
+		if r != word {
+			word = r
+		} else {
+			continue
+		}
+		lstWords = nil
+		for _, r := range newSlice {
+			r = strings.Replace(r, ".", "", -1)
+			if r == word {
+				lstWords = append(lstWords, r)
+			}
+		}
+		wordLsts = append(wordLsts, lstWords)
+	}
+	// fmt.Println(wordLsts)
+
+	// определить большинство
+	sort.SliceStable(wordLsts, func(i, j int) bool {
+		return len(wordLsts[i]) > len(wordLsts[j])
 	})
 
-	t.Run("positive test", func(t *testing.T) {
-		if taskWithAsteriskIsCompleted {
-			expected := []string{
-				"а",         // 8
-				"он",        // 8
-				"и",         // 6
-				"ты",        // 5
-				"что",       // 5
-				"в",         // 4
-				"его",       // 4
-				"если",      // 4
-				"кристофер", // 4
-				"не",        // 4
-			}
-			require.Equal(t, expected, Top10(text))
-		} else {
-			expected := []string{
-				"он",        // 8
-				"а",         // 6
-				"и",         // 6
-				"ты",        // 5
-				"что",       // 5
-				"-",         // 4
-				"Кристофер", // 4
-				"если",      // 4
-				"не",        // 4
-				"то",        // 4
-			}
-			require.Equal(t, expected, Top10(text))
+	// fmt.Println(wordLsts)
+
+	// вывести топ 10
+	var top10Str []string
+	top := 10
+	//fmt.Println(wordLsts)
+	for i, r := range wordLsts {
+		if i == top {
+			break
 		}
-	})
+		top10Str = append(top10Str, r[0])
+	}
+	fmt.Println(top10Str)
 }
