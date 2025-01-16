@@ -28,7 +28,7 @@ func Unpack(s string) (string, error) {
 
 		if checkDelimiterSet(i, s, r) {
 			delimiter = true
-			newStr.WriteString(string(r))
+			newStr.WriteRune(r)
 		}
 
 		elBack = resetLastValue(i, s, elBack)
@@ -63,9 +63,9 @@ func Unpack(s string) (string, error) {
 			}
 		} else {
 			if !unicode.IsDigit(r) {
-				newStr.WriteString(string(r))
+				newStr.WriteRune(r)
 			} else if elBack == ByteDelimiter {
-				newStr.WriteString(string(r))
+				newStr.WriteRune(r)
 			}
 		}
 	}
