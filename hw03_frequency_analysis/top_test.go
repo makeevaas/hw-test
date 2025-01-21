@@ -81,7 +81,7 @@ func TestTop10(t *testing.T) {
 	})
 }
 
-func TestTop2(t *testing.T) {
+func TestAdditionalTask(t *testing.T) {
 	s := "нога. рука. - нога! ------ dog.cat dogcat нога, dog...cat рука, ------ dog.cat ------ нога - -"
 	t.Run("", func(t *testing.T) {
 		expected := []string{
