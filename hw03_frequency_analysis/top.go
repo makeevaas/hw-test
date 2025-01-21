@@ -1,6 +1,7 @@
 package hw03frequencyanalysis
 
 import (
+	"regexp"
 	"sort"
 	"strings"
 )
@@ -12,16 +13,16 @@ func Top10(s string) []string {
 	s = strings.ToLower(s)
 	var lstWords []string
 	wordLsts := make([][]string, 0, len(s))
-	// s := "aligator dog cat cat aligator mouth cat dog dog cat dog aligator mouth horse aligator"
 	// top 10
 	newSlice := strings.Fields(s)
 	sort.Strings(sort.StringSlice(newSlice))
 	var word string
+	re := regexp.MustCompile(`^[!\,\.\d_]|[!\,\.\d_]$|^` + regexp.QuoteMeta(NotWord) + `$`)
 	for _, r := range newSlice {
-		r = strings.ReplaceAll(r, ".", "")
 		if r == NotWord {
 			continue
 		}
+		r = re.ReplaceAllString(r, "")
 		if r != word {
 			word = r
 		} else {
@@ -29,7 +30,7 @@ func Top10(s string) []string {
 		}
 		lstWords = nil
 		for _, r := range newSlice {
-			r = strings.ReplaceAll(r, ".", "")
+			r = re.ReplaceAllString(r, "")
 			if r == word {
 				lstWords = append(lstWords, r)
 			}

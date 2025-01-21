@@ -80,3 +80,18 @@ func TestTop10(t *testing.T) {
 		}
 	})
 }
+
+func TestTop2(t *testing.T) {
+	s := "нога. рука. - нога! ------ dog.cat dogcat нога, dog...cat рука, ------ dog.cat ------ нога - -"
+	t.Run("", func(t *testing.T) {
+		expected := []string{
+			"нога",      // 4
+			"------",    // 3
+			"dog.cat",   // 2
+			"рука",      // 2
+			"dog...cat", // 1
+			"dogcat",    // 1
+		}
+		require.Equal(t, expected, Top10(s))
+	})
+}
