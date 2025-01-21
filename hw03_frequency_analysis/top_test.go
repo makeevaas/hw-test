@@ -81,6 +81,18 @@ func TestTop10(t *testing.T) {
 	})
 }
 
+func TestWords(t *testing.T) {
+	s := "нога ногу нога ноги нога ногу нога Ноги Ногу "
+	t.Run("", func(t *testing.T) {
+		expected := []string{
+			"нога", // 4
+			"ногу", // 3
+			"ноги", // 2
+		}
+		require.Equal(t, expected, Top10(s))
+	})
+}
+
 func TestAdditionalTask(t *testing.T) {
 	s := "нога. рука. - нога! ------ dog.cat dogcat нога, dog...cat рука, ------ dog.cat ------ нога - -"
 	t.Run("", func(t *testing.T) {
