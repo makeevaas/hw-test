@@ -81,6 +81,11 @@ func TestCache(t *testing.T) {
 		val, ok = c.Get("aaa")
 		require.True(t, ok)
 		require.Equal(t, 200, val)
+
+		// удаление всего
+		c.Clear()
+		_, ok = c.Get("aaa")
+		require.False(t, ok)
 	})
 }
 

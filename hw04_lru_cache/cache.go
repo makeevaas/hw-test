@@ -1,9 +1,6 @@
 package hw04lrucache
 
-import (
-	"encoding/json"
-	"fmt"
-)
+import "strconv"
 
 type Key string
 
@@ -35,11 +32,7 @@ func (l *lruCache) Set(key Key, value interface{}) bool {
 	}
 
 	if l.queue.Len() >= l.capacity {
-		l.Clear()
-	}
-
-	if l.queue.Len() > l.capacity {
-		return false
+		l.pushOut()
 	}
 
 	el := l.queue.PushFront(value)
@@ -55,18 +48,18 @@ func (l *lruCache) Get(key Key) (interface{}, bool) {
 	return nil, false
 }
 
-func (l *lruCache) Clear() {
+func (l *lruCache) pushOut() {
 	if l.queue.Len() == 0 {
 		return
 	}
 	el := l.queue.Back()
 	if el != nil {
 		l.queue.Remove(el)
-		b, err := json.Marshal(el.Value)
-		if err != nil {
-			fmt.Printf("Error: %s", err)
-			return
-		}
-		delete(l.items, Key(string(b)))
+		delete(l.items, Key(strconv.Itoa(el.Value.(int))))
 	}
+}
+
+func (l *lruCache) Clear() {
+	l.items = nil
+	l.queue = nil
 }
