@@ -14,12 +14,13 @@ type ListItem struct {
 	Value interface{}
 	Next  *ListItem
 	Prev  *ListItem
+	Key   string
 }
 
 type list struct {
-	FrontState *ListItem
-	BackState  *ListItem
-	counter    int
+	front   *ListItem
+	back    *ListItem
+	counter int
 }
 
 func NewList() List {
@@ -32,13 +33,13 @@ func (l *list) Len() int {
 
 func (l *list) PushFront(v interface{}) *ListItem {
 	lItem := &ListItem{Value: v}
-	if l.FrontState == nil {
-		l.FrontState = lItem
-		l.BackState = lItem
+	if l.front == nil {
+		l.front = lItem
+		l.back = lItem
 	} else {
-		lItem.Next = l.FrontState
-		l.FrontState.Prev = lItem
-		l.FrontState = lItem
+		lItem.Next = l.front
+		l.front.Prev = lItem
+		l.front = lItem
 	}
 	l.counter++
 	return lItem
@@ -46,13 +47,13 @@ func (l *list) PushFront(v interface{}) *ListItem {
 
 func (l *list) PushBack(v interface{}) *ListItem {
 	lItem := &ListItem{Value: v}
-	if l.FrontState == nil {
-		l.FrontState = lItem
-		l.BackState = lItem
+	if l.front == nil {
+		l.front = lItem
+		l.back = lItem
 	} else {
-		l.BackState.Next = lItem
-		lItem.Prev = l.BackState
-		l.BackState = lItem
+		l.back.Next = lItem
+		lItem.Prev = l.back
+		l.back = lItem
 	}
 	l.counter++
 	return lItem
@@ -69,15 +70,15 @@ func (l *list) Remove(i *ListItem) {
 }
 
 func (l *list) Front() *ListItem {
-	return l.FrontState
+	return l.front
 }
 
 func (l *list) Back() *ListItem {
-	return l.BackState
+	return l.back
 }
 
 func (l *list) MoveToFront(i *ListItem) {
-	if i == l.FrontState {
+	if i == l.front {
 		return
 	}
 
@@ -87,12 +88,12 @@ func (l *list) MoveToFront(i *ListItem) {
 	if i.Next != nil {
 		i.Next.Prev = i.Prev
 	}
-	if i == l.BackState {
-		l.BackState = i.Prev
+	if i == l.back {
+		l.back = i.Prev
 	}
 
 	i.Prev = nil
-	i.Next = l.FrontState
-	l.FrontState.Prev = i
-	l.FrontState = i
+	i.Next = l.front
+	l.front.Prev = i
+	l.front = i
 }

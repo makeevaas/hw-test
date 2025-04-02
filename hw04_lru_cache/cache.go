@@ -1,7 +1,5 @@
 package hw04lrucache
 
-import "strconv"
-
 type Key string
 
 type Cache interface {
@@ -32,10 +30,15 @@ func (l *lruCache) Set(key Key, value interface{}) bool {
 	}
 
 	if l.queue.Len() >= l.capacity {
-		l.pushOut()
+		el := l.queue.Back()
+		if el != nil {
+			l.queue.Remove(el)
+			delete(l.items, Key(el.Key))
+		}
 	}
 
 	el := l.queue.PushFront(value)
+	el.Key = string(key)
 	l.items[key] = el
 	return false
 }
@@ -48,18 +51,7 @@ func (l *lruCache) Get(key Key) (interface{}, bool) {
 	return nil, false
 }
 
-func (l *lruCache) pushOut() {
-	if l.queue.Len() == 0 {
-		return
-	}
-	el := l.queue.Back()
-	if el != nil {
-		l.queue.Remove(el)
-		delete(l.items, Key(strconv.Itoa(el.Value.(int))))
-	}
-}
-
 func (l *lruCache) Clear() {
-	l.items = nil
-	l.queue = nil
+	l.queue = NewList()
+	l.items = make(map[Key]*ListItem, 0)
 }
