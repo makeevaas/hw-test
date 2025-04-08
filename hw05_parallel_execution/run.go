@@ -3,7 +3,6 @@ package hw05parallelexecution
 import (
 	"errors"
 	"sync"
-	"sync/atomic"
 )
 
 var ErrErrorsLimitExceeded = errors.New("errors limit exceeded")
@@ -13,6 +12,8 @@ type Task func() error
 // Run starts tasks in n goroutines and stops its work when receiving m errors from tasks.
 func Run(tasks []Task, n, m int) error {
 	var wg sync.WaitGroup
+	var mu sync.Mutex
+
 	var errCount int32
 	taskChan := make(chan Task)
 
@@ -20,11 +21,16 @@ func Run(tasks []Task, n, m int) error {
 	worker := func() {
 		defer wg.Done()
 		for task := range taskChan {
+			mu.Lock()
 			if int(errCount) >= m {
+				mu.Unlock()
 				return
 			}
+			mu.Unlock()
 			if err := task(); err != nil {
-				atomic.AddInt32(&errCount, 1)
+				mu.Lock()
+				errCount++
+				mu.Unlock()
 			}
 		}
 	}
@@ -36,9 +42,12 @@ func Run(tasks []Task, n, m int) error {
 
 	// очередь задач кладем в канал, следим за количеством ошибок
 	for _, task := range tasks {
+		mu.Lock()
 		if int(errCount) >= m {
+			mu.Unlock()
 			break
 		}
+		mu.Unlock()
 		taskChan <- task
 	}
 	close(taskChan)
@@ -46,6 +55,8 @@ func Run(tasks []Task, n, m int) error {
 	// ожидание завершения всех горутин
 	wg.Wait()
 
+	mu.Lock()
+	defer mu.Unlock()
 	if int(errCount) >= m {
 		return ErrErrorsLimitExceeded
 	}
