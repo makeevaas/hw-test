@@ -11,6 +11,12 @@ type Stage func(in In) (out Out)
 func ExecutePipeline(in In, done In, stages ...Stage) Out {
 	pipe := in
 
+	consumer := func(in In) {
+		for range in {
+			continue
+		}
+	}
+
 	worker := func(in In, done In) Out {
 		out := make(Bi)
 		go func() {
@@ -18,10 +24,7 @@ func ExecutePipeline(in In, done In, stages ...Stage) Out {
 			for {
 				select {
 				case <-done:
-					go func() {
-						for _ = range in {
-						}
-					}()
+					go consumer(in)
 					return
 				case v, ok := <-in:
 					if !ok {
